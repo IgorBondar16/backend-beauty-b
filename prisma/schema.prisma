@@ -1,0 +1,270 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+// generator client {
+//   provider = "prisma-client-js"
+// }
+
+// datasource db {
+//   provider = "postgresql"
+//   url      = env("DATABASE_URL")
+// }
+
+// generator client {
+//   provider = "prisma-client-js"
+//   output   = "./__generated__"
+// }
+
+// datasource db {
+//   provider = "postgresql"
+//   url      = env("POSTGRES_URI")
+// }
+
+// model User {
+//   id String @id @default(cuid())
+//   createdAt DateTime @default(now()) @map("created_at")
+//   updatedAt DateTime @updatedAt @map("updated_at")
+  
+//   email String @unique
+//   password String?
+
+//   name String @default("Не вказано")
+//   picture String @default("/uploads/no-user-image.png")
+
+//   @@map("user")
+// }
+// // schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String     @id @default(cuid())
+  email          String     @unique
+  phone          String?    @unique
+  password       String
+  name           String
+  avatarUrl      String @default("/uploads/no-user-image.png")
+  role           Role       // CLIENT or MASTER
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  // relations
+  services       Service[]  @relation("MasterServices")
+  bookings       Booking[]  @relation("UserBookings")
+  reviews        Review[]   @relation("UserReviews")
+  schedule       Schedule[] @relation("MasterSchedule")
+  payments       Payment[]  @relation("UserPayments")
+
+  Booking Booking[] @relation("MasterBookings")
+
+}
+
+enum Role {
+  CLIENT
+  MASTER
+}
+
+model Service {
+  id             String     @id @default(cuid())
+  title          String
+  description    String
+  imageUrl       String 
+  address        String
+  price          Float
+  durationMin    Int
+  createdAt      DateTime   @default(now())
+
+  master         User       @relation("MasterServices", fields: [masterId], references: [id])
+  masterId       String
+
+  category       Category   @relation(fields: [categoryId], references: [id])
+  categoryId     String
+
+  bookings       Booking[]
+  reviews        Review[]
+}
+
+
+model Category {
+  id          String     @id @default(cuid())
+  name        String
+  description String?
+  iconUrl     String?
+  createdAt   DateTime   @default(now())
+
+  services    Service[]
+}
+
+
+model Booking {
+  id             String     @id @default(cuid())
+  date           DateTime
+  status         BookingStatus @default(PENDING)
+  createdAt      DateTime   @default(now())
+
+  user           User       @relation("UserBookings", fields: [userId], references: [id])
+  userId         String
+
+  service        Service    @relation(fields: [serviceId], references: [id])
+  serviceId      String
+  master         User       @relation("MasterBookings", fields: [masterId], references: [id])
+  masterId       String
+
+
+  payment        Payment?
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+model Review {
+  id             String     @id @default(cuid())
+  rating         Int
+  comment        String
+  createdAt      DateTime   @default(now())
+
+  user           User       @relation("UserReviews", fields: [userId], references: [id])
+  userId         String
+
+  service        Service    @relation(fields: [serviceId], references: [id])
+  serviceId      String
+}
+
+model Schedule { //
+  id             String     @id @default(cuid())
+  date           DateTime
+  startTime      DateTime
+  endTime        DateTime
+  isAvailable    Boolean    @default(true)
+
+  master         User       @relation("MasterSchedule", fields: [masterId], references: [id])
+  masterId       String
+}
+
+model Payment {
+  id             String     @id @default(cuid())
+  amount         Float
+  method         PaymentMethod
+  status         PaymentStatus
+  createdAt      DateTime   @default(now())
+
+  user           User       @relation("UserPayments", fields: [userId], references: [id])
+  userId         String
+
+  booking        Booking?   @relation(fields: [bookingId], references: [id])
+  bookingId      String?    @unique
+}
+
+enum PaymentMethod {
+  PAYPAL
+  STRIPE
+  CARD
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+}
+
+// model Promotion {
+//   id          String   @id @default(cuid())
+//   title       String
+//   description String
+//   discount    Float
+//   validFrom   DateTime
+//   validTo     DateTime
+
+//   master      User     @relation(fields: [masterId], references: [id])
+//   masterId    String
+// }
+
+
+
+
+
+
+
+
+//   email    String @unique
+//   password String
+
+//   displayName String
+//   picture     String?
+
+//   role UserRole @default(REGULAR)
+
+//   isVerified         Boolean @default(false) @map("is_verified")
+//   isTwoFactorEnabled Boolean @default(false) @map("is_two_factor_enabled")
+
+//   method AuthMethod
+
+//   accounts Account[]
+
+//   createdAt DateTime @default(now()) @map("created_at")
+//   updatedAt DateTime @updatedAt @map("updated_at")
+
+//   @@map("users")
+// }
+
+// model Account {
+//   id String @id @default(uuid())
+
+//   type     String
+//   provider String
+
+//   refreshToken String? @map("refresh_token")
+//   accessToken  String? @map("access_token")
+//   expiresAt    Int     @map("expires_at")
+
+//   createdAt DateTime @default(now()) @map("created_at")
+//   updatedAt DateTime @updatedAt @map("updated_at")
+
+//   user   User?   @relation(fields: [userId], references: [id])
+//   userId String? @map("user_id")
+
+//   @@map("accounts")
+// }
+
+// model Token {
+//   id String @id @default(uuid())
+
+//   email     String
+//   token     String    @unique
+//   type      TokenType
+//   expiresIn DateTime  @map("expires_in")
+
+//   createdAt DateTime @default(now()) @map("created_at")
+
+//   @@map("tokens")
+// }
+
+// enum UserRole {
+//   REGULAR
+//   ADMIN
+// }
+
+// enum AuthMethod {
+//   CREDENTIALS
+//   GOOGLE
+//   YANDEX
+// }
+
+// enum TokenType {
+//   VERIFICATION
+//   TWO_FACTOR
+//   PASSWORD_RESET
