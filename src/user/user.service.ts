@@ -44,16 +44,16 @@ export class UserService {
           });
     }  
 
-    getUserById(id: string) {
+  async getUserById(id: string) {
         return this.prisma.user.findUnique({
             where: { id },
             select: {
                 id: true,
                 name: true,
                 email: true,
-                role: true,
-                avatarUrl: true,
-                createdAt: true,
+                role: true
+                // avatarUrl: true,
+                // createdAt: true,
             },
         });
     }
@@ -122,6 +122,27 @@ export class UserService {
     return this.prisma.user.update({
       where: { id },
       data: updateUserDto,
+    });
+  }
+
+  async getByEmail(email: string) {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user) throw new NotFoundException('User not found');
+    return user;
+  }
+
+  async updatePassword(id: string, password: string) {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    return this.prisma.user.update({
+      where: { id },
+      data: { password: hashedPassword },
+    });
+  }
+
+  async updateAvatar(id: string, avatarUrl: string) {
+    return this.prisma.user.update({
+      where: { id },
+      data: { avatarUrl },
     });
   }
 
