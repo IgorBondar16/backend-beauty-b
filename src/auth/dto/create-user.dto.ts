@@ -1,29 +1,51 @@
-import { IsEmail, IsEnum, IsOptional, IsPhoneNumber, IsString, MinLength } from 'class-validator';
+// import { IsEmail, IsEnum, IsOptional, IsPhoneNumber, IsString, MinLength } from 'class-validator';
 
 export enum Role {
   CLIENT = 'CLIENT',
   MASTER = 'MASTER',
 }
 
-export class CreateUserDto {
-  @IsEmail({}, { message: 'Пошта обов\'язкова' })
+// export class CreateUserDto {
+//   @IsEmail({}, { message: 'Пошта обов\'язкова' })
+//   email: string;
+
+//   @IsOptional()
+//   @IsPhoneNumber()
+//   phone?: string;
+
+//   @IsString()
+//   @MinLength(6)
+//   password: string;
+
+//   @IsString()
+//   name: string;
+
+//   @IsEnum(Role)
+//   role: Role;
+
+//   @IsOptional()
+//   @IsString()
+//   avatarUrl?: string;
+// }
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+
+
+export class RegisterDto {
+  @ApiProperty({ example: 'test@gmail.com' })
   email: string;
 
-  @IsOptional()
-  @IsPhoneNumber()
+  @ApiPropertyOptional({ example: '+380931112233' })
   phone?: string;
 
-  @IsString()
-  @MinLength(6)
+  @ApiProperty({ example: '123456' })
   password: string;
 
-  @IsString()
+  @ApiProperty({ example: 'Олександр' })
   name: string;
 
-  @IsEnum(Role)
+  @ApiProperty({ enum: Role, example: Role.MASTER })
   role: Role;
 
-  @IsOptional()
-  @IsString()
+  @ApiPropertyOptional({ example: 'https://example.com/avatar.jpg' })
   avatarUrl?: string;
 }
