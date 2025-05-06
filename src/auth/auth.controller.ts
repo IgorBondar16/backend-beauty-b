@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, Post, Res, Req, UnauthorizedException, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post, Res, Req, UnauthorizedException, UsePipes, ValidationPipe, Get } from '@nestjs/common';
 import { response, Response, Request } from 'express';
 import { AuthService } from './auth.service';
 import { AuthDto } from './dto/auth.dto';
@@ -73,6 +73,74 @@ export class AuthController {
 
     return response;
   }
+
+  
+  @Post('logout')
+  @HttpCode(200)
+  @ApiOperation({ summary: 'Вийти з системи (очистити токени)' })
+  @ApiResponse({ status: 200, description: 'Вихід успішний' })
+  logout(@Res({ passthrough: true }) res: Response) {
+    return 'TODO: реалізація logout';
+  }
+
+  @Post('send-sms-code')
+  @HttpCode(200)
+  @ApiOperation({ summary: 'Надіслати SMS-код для підтвердження телефону' })
+  @ApiResponse({ status: 200, description: 'Код надіслано' })
+  sendSmsCode(@Body() body: any) {
+    return 'TODO: реалізація надсилання SMS';
+  }
+
+  @Post('verify-sms-code')
+  @HttpCode(200)
+  @ApiOperation({ summary: 'Підтвердити SMS-код' })
+  @ApiResponse({ status: 200, description: 'Код підтверджено' })
+  verifySmsCode(@Body() body: any) {
+    return 'TODO: реалізація перевірки SMS';
+  }
+
+  @Get('me')
+  @HttpCode(200)
+  @ApiOperation({ summary: 'Отримати дані поточного користувача' })
+  @ApiResponse({ status: 200, description: 'Дані користувача' })
+  getProfile(@Req() req: Request) {
+    return 'TODO: реалізація профілю';
+  }
+
+  @Post('google-login')
+  @HttpCode(200)
+  @ApiOperation({ summary: 'Авторизація через Google OAuth' })
+  @ApiResponse({ status: 200, description: 'Користувач авторизований через Google' })
+  googleLogin(@Body() body: any) {
+    return 'TODO: Google login';
+  }
+
+  @Get('calendar/:masterId')
+  @HttpCode(200)
+  @ApiOperation({ summary: 'Отримати календар записів для майстра' })
+  @ApiResponse({ status: 200, description: 'Календар бронювань' })
+  // getCalendar(@Param('masterId') masterId: string) {
+  //   return `TODO: календар бронювань для майстра ${masterId}`;
+  // }
+
+  @Post(':id/cancel')
+  @HttpCode(200)
+  @ApiOperation({ summary: 'Скасувати бронювання' })
+  @ApiResponse({ status: 200, description: 'Бронювання скасовано' })
+  // cancelBooking(@Param('id') id: string) {
+  //   return `TODO: скасування бронювання ${id}`;
+  // }
+
+  @Post(':id/confirm')
+  @HttpCode(200)
+  @ApiOperation({ summary: 'Підтвердити бронювання' })
+  @ApiResponse({ status: 200, description: 'Бронювання підтверджено' })
+  confirmBooking(@Body() body: any) {
+    return 'TODO: підтвердження бронювання';
+  }
+  // confirmBooking(@Param('id') id: string) {
+  //   return `TODO: підтвердження бронювання ${id}`;
+  // }
 }
 
 
